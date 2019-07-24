@@ -1,0 +1,703 @@
+<!doctype html>
+<html style='font-size:14px !important'>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>day01-爬虫</title><link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --node-fill:  #ECECFF; --node-border:  #CCCCFF; --note-fill:  #fff5ad; --note-border:  #aaaa33; --cluster-fill:  #ffffde  !important; --cluster-border:  #aaaa33  !important; }
+.mermaid .label { color: var(--text-color); }
+.node rect, .node circle, .node ellipse, .node polygon { fill: var(--node-fill); stroke: var(--node-border); stroke-width: 1px; }
+.edgePath .path { stroke: var(--text-color); }
+.edgeLabel { background-color: var(--bg-color); }
+.cluster rect { fill: rgb(255, 255, 222) !important; rx: 4px !important; stroke: rgb(170, 170, 51) !important; stroke-width: 1px !important; }
+.cluster text { fill: var(--text-color); }
+.actor { stroke: var(--node-border); fill: var(--node-fill); }
+text.actor { fill: var(--text-color); stroke: none; }
+.actor-line { stroke: grey; }
+.messageLine0 { stroke-width: 1.5px; stroke: var(--text-color); }
+.messageLine1 { stroke-width: 1.5px; stroke: var(--text-color); }
+#arrowhead { fill: var(--text-color); }
+#crosshead path { fill: var(--text-color)  !important; stroke: var(--text-color)  !important; }
+.messageText { fill: var(--text-color); stroke: none; }
+.labelBox { stroke: var(--node-border); fill: var(--node-fill); }
+.labelText { fill: var(--text-color); stroke: none; }
+.loopText { fill: var(--text-color); stroke: none; }
+.loopLine { stroke-width: 2px; stroke: var(--node-border); }
+.note { stroke: var(--note-border); fill: var(--note-fill); }
+.noteText { fill: var(--text-color); stroke: none; font-size: 14px; }
+.section { stroke: none; opacity: 0.2; }
+.section0 { fill: rgba(102, 102, 255, 0.490196); }
+.section2 { fill: rgb(255, 244, 0); }
+.section1, .section3 { fill: white; opacity: 0.2; }
+.sectionTitle0 { fill: var(--text-color); }
+.sectionTitle1 { fill: var(--text-color); }
+.sectionTitle2 { fill: var(--text-color); }
+.sectionTitle3 { fill: var(--text-color); }
+.sectionTitle { text-anchor: start; font-size: 11px; }
+.grid .tick { stroke: lightgrey; opacity: 0.3; shape-rendering: crispedges; }
+.grid path { stroke-width: 0px; }
+.today { fill: none; stroke: red; stroke-width: 2px; }
+.task { stroke-width: 2px; }
+.taskText { text-anchor: middle; font-size: 11px; }
+.taskTextOutsideRight { fill: black; text-anchor: start; font-size: 11px; }
+.taskTextOutsideLeft { fill: black; text-anchor: end; font-size: 11px; }
+.taskText0, .taskText1, .taskText2, .taskText3 { fill: white; }
+.task0, .task1, .task2, .task3 { fill: rgb(138, 144, 221); stroke: rgb(83, 79, 188); }
+.taskTextOutside0, .taskTextOutside2 { fill: var(--text-color); }
+.taskTextOutside1, .taskTextOutside3 { fill: var(--text-color); }
+.active0, .active1, .active2, .active3 { fill: rgb(191, 199, 255); stroke: rgb(83, 79, 188); }
+.activeText0, .activeText1, .activeText2, .activeText3 { fill: black !important; }
+.done0, .done1, .done2, .done3 { stroke: grey; fill: lightgrey; stroke-width: 2px; }
+.doneText0, .doneText1, .doneText2, .doneText3 { fill: black !important; }
+.crit0, .crit1, .crit2, .crit3 { stroke: rgb(255, 136, 136); fill: red; stroke-width: 2px; }
+.activeCrit0, .activeCrit1, .activeCrit2, .activeCrit3 { stroke: rgb(255, 136, 136); fill: rgb(191, 199, 255); stroke-width: 2px; }
+.doneCrit0, .doneCrit1, .doneCrit2, .doneCrit3 { stroke: rgb(255, 136, 136); fill: lightgrey; stroke-width: 2px; cursor: pointer; shape-rendering: crispedges; }
+.doneCritText0, .doneCritText1, .doneCritText2, .doneCritText3 { fill: black !important; }
+.activeCritText0, .activeCritText1, .activeCritText2, .activeCritText3 { fill: black !important; }
+.titleText { text-anchor: middle; font-size: 18px; fill: black; }
+.node text { font-size: 14px; }
+div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-size: 12px; background-color: rgb(255, 255, 222); border: 1px solid rgb(170, 170, 51); border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-bottom-left-radius: 2px; pointer-events: none; z-index: 100; background-position: initial initial; background-repeat: initial initial; }
+#write .md-diagram-panel .md-diagram-panel-preview div { }
+
+
+:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg-color: #B5D6FC; --select-text-font-color: auto; --monospace: "Lucida Console",Consolas,"Courier",monospace; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857143; overflow-x: hidden; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; tab-size: 4; background-position: inherit inherit; background-repeat: inherit inherit; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; word-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 40px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+@media screen and (max-width: 500px) { 
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font-family: inherit; font-size: inherit; font-style: inherit; font-variant-caps: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 2; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.701961); color: rgb(85, 85, 85); border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right-width: 0px; background-color: inherit; }
+.CodeMirror-linenumber { }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; position: relative !important; background-position: inherit inherit; background-repeat: inherit inherit; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; background-position: 0px 0px; background-repeat: initial initial; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print { 
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid-page; break-before: avoid-page; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 32px; padding-right: 32px; padding-bottom: 0px; break-after: avoid-page; }
+  .typora-export #write::after { height: 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background-color: rgb(204, 204, 204); display: block; overflow-x: hidden; background-position: initial initial; background-repeat: initial initial; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) { 
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background-color: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; background-position: initial initial; background-repeat: initial initial; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; }
+a.md-print-anchor { white-space: pre !important; border: none !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; text-shadow: initial !important; background-position: 0px 0px !important; background-repeat: initial initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; margin-top: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="mermaid"] svg, [lang="flow"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom-width: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+
+
+.CodeMirror { height: auto; }
+.CodeMirror.cm-s-inner { background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; background-position: inherit inherit; background-repeat: inherit inherit; }
+.CodeMirror-scroll { overflow-y: hidden; overflow-x: auto; z-index: 3; }
+.CodeMirror-gutter-filler, .CodeMirror-scrollbar-filler { background-color: rgb(255, 255, 255); }
+.CodeMirror-gutters { border-right-width: 1px; border-right-style: solid; border-right-color: rgb(221, 221, 221); background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; white-space: nowrap; background-position: inherit inherit; background-repeat: inherit inherit; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: rgb(153, 153, 153); }
+.cm-s-inner .cm-keyword { color: rgb(119, 0, 136); }
+.cm-s-inner .cm-atom, .cm-s-inner.cm-atom { color: rgb(34, 17, 153); }
+.cm-s-inner .cm-number { color: rgb(17, 102, 68); }
+.cm-s-inner .cm-def { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-variable { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-variable-2 { color: rgb(0, 85, 170); }
+.cm-s-inner .cm-variable-3 { color: rgb(0, 136, 85); }
+.cm-s-inner .cm-string { color: rgb(170, 17, 17); }
+.cm-s-inner .cm-property { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-operator { color: rgb(152, 26, 26); }
+.cm-s-inner .cm-comment, .cm-s-inner.cm-comment { color: rgb(170, 85, 0); }
+.cm-s-inner .cm-string-2 { color: rgb(255, 85, 0); }
+.cm-s-inner .cm-meta { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-qualifier { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-builtin { color: rgb(51, 0, 170); }
+.cm-s-inner .cm-bracket { color: rgb(153, 153, 119); }
+.cm-s-inner .cm-tag { color: rgb(17, 119, 0); }
+.cm-s-inner .cm-attribute { color: rgb(0, 0, 204); }
+.cm-s-inner .cm-header, .cm-s-inner.cm-header { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-quote, .cm-s-inner.cm-quote { color: rgb(0, 153, 0); }
+.cm-s-inner .cm-hr, .cm-s-inner.cm-hr { color: rgb(153, 153, 153); }
+.cm-s-inner .cm-link, .cm-s-inner.cm-link { color: rgb(0, 0, 204); }
+.cm-negative { color: rgb(221, 68, 68); }
+.cm-positive { color: rgb(34, 153, 34); }
+.cm-header, .cm-strong { font-weight: 700; }
+.cm-del { text-decoration: line-through; }
+.cm-em { font-style: italic; }
+.cm-link { text-decoration: underline; }
+.cm-error { color: red; }
+.cm-invalidchar { color: red; }
+.cm-constant { color: rgb(38, 139, 210); }
+.cm-defined { color: rgb(181, 137, 0); }
+div.CodeMirror span.CodeMirror-matchingbracket { color: rgb(0, 255, 0); }
+div.CodeMirror span.CodeMirror-nonmatchingbracket { color: rgb(255, 34, 34); }
+.cm-s-inner .CodeMirror-activeline-background { background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; background-position: inherit inherit; background-repeat: inherit inherit; }
+.CodeMirror { position: relative; overflow: hidden; }
+.CodeMirror-scroll { height: 100%; outline: 0px; position: relative; box-sizing: content-box; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; background-position: inherit inherit; background-repeat: inherit inherit; }
+.CodeMirror-sizer { position: relative; }
+.CodeMirror-gutter-filler, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-vscrollbar { position: absolute; z-index: 6; display: none; }
+.CodeMirror-vscrollbar { right: 0px; top: 0px; overflow: hidden; }
+.CodeMirror-hscrollbar { bottom: 0px; left: 0px; overflow: hidden; }
+.CodeMirror-scrollbar-filler { right: 0px; bottom: 0px; }
+.CodeMirror-gutter-filler { left: 0px; bottom: 0px; }
+.CodeMirror-gutters { position: absolute; left: 0px; top: 0px; padding-bottom: 30px; z-index: 3; }
+.CodeMirror-gutter { white-space: normal; height: 100%; box-sizing: content-box; padding-bottom: 30px; margin-bottom: -32px; display: inline-block; }
+.CodeMirror-gutter-wrapper { position: absolute; z-index: 4; border: none !important; background-position: 0px 0px !important; background-repeat: initial initial !important; }
+.CodeMirror-gutter-background { position: absolute; top: 0px; bottom: 0px; z-index: 4; }
+.CodeMirror-gutter-elt { position: absolute; cursor: default; z-index: 4; }
+.CodeMirror-lines { cursor: text; }
+.CodeMirror pre { border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-width: 0px; font-family: inherit; font-size: inherit; margin: 0px; white-space: pre; word-wrap: normal; color: inherit; z-index: 2; position: relative; overflow: visible; background-position: 0px 0px; background-repeat: initial initial; }
+.CodeMirror-wrap pre { word-wrap: break-word; white-space: pre-wrap; word-break: normal; }
+.CodeMirror-code pre { border-right-width: 30px; border-right-style: solid; border-right-color: transparent; width: fit-content; }
+.CodeMirror-wrap .CodeMirror-code pre { border-right-style: none; width: auto; }
+.CodeMirror-linebackground { position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; z-index: 0; }
+.CodeMirror-linewidget { position: relative; z-index: 2; overflow: auto; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: hidden; }
+.CodeMirror-measure { position: absolute; width: 100%; height: 0px; overflow: hidden; visibility: hidden; }
+.CodeMirror-measure pre { position: static; }
+.CodeMirror div.CodeMirror-cursor { position: absolute; visibility: hidden; border-right-style: none; width: 0px; }
+.CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+.CodeMirror-focused div.CodeMirror-cursor { visibility: inherit; }
+.cm-searching { background-color: rgba(255, 255, 0, 0.4); background-position: initial initial; background-repeat: initial initial; }
+@media print { 
+  .CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+}
+
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
+
+@include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Open Sans","Clear Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: rgb(51, 51, 51);
+    line-height: 1.6;
+}
+
+#write {
+    max-width: 860px;
+  	margin: 0 auto;
+  	padding: 30px;
+    padding-bottom: 100px;
+}
+#write > ul:first-child,
+#write > ol:first-child{
+    margin-top: 30px;
+}
+
+a {
+    color: #4183C4;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+    text-decoration: none;
+}
+h1 tt,
+h1 code {
+    font-size: inherit;
+}
+h2 tt,
+h2 code {
+    font-size: inherit;
+}
+h3 tt,
+h3 code {
+    font-size: inherit;
+}
+h4 tt,
+h4 code {
+    font-size: inherit;
+}
+h5 tt,
+h5 code {
+    font-size: inherit;
+}
+h6 tt,
+h6 code {
+    font-size: inherit;
+}
+h1 {
+    padding-bottom: .3em;
+    font-size: 2.25em;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+}
+h2 {
+   padding-bottom: .3em;
+    font-size: 1.75em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+h3 {
+    font-size: 1.5em;
+    line-height: 1.43;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+   font-size: 1em;
+    color: #777;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table{
+    margin: 0.8em 0;
+}
+li>ol,
+li>ul {
+    margin: 0 0;
+}
+hr {
+    height: 2px;
+    padding: 0;
+    margin: 16px 0;
+    background-color: #e7e7e7;
+    border: 0 none;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+li p.first {
+    display: inline-block;
+}
+ul,
+ol {
+    padding-left: 30px;
+}
+ul:first-child,
+ol:first-child {
+    margin-top: 0;
+}
+ul:last-child,
+ol:last-child {
+    margin-bottom: 0;
+}
+blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding: 0 15px;
+    color: #777777;
+}
+blockquote blockquote {
+    padding-right: 0;
+}
+table {
+    padding: 0;
+    word-break: initial;
+}
+table tr {
+    border-top: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 0;
+}
+table tr:nth-child(2n),
+thead {
+    background-color: #f8f8f8;
+}
+table tr th {
+    font-weight: bold;
+    border: 1px solid #dfe2e5;
+    border-bottom: 0;
+    text-align: left;
+    margin: 0;
+    padding: 6px 13px;
+}
+table tr td {
+    border: 1px solid #dfe2e5;
+    text-align: left;
+    margin: 0;
+    padding: 6px 13px;
+}
+table tr th:first-child,
+table tr td:first-child {
+    margin-top: 0;
+}
+table tr th:last-child,
+table tr td:last-child {
+    margin-bottom: 0;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+.code-tooltip {
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
+    border-top: 1px solid #eef2f2;
+}
+
+.md-fences,
+code,
+tt {
+    border: 1px solid #e7eaed;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+    padding: 0;
+    padding: 2px 4px 0px 4px;
+    font-size: 0.9em;
+}
+
+code {
+    background-color: #f3f4f4;
+    padding: 0 2px 0 2px;
+}
+
+.md-fences {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+}
+
+
+.md-task-list-item > input {
+  margin-left: -1.3em;
+}
+
+@media print {
+    html {
+        font-size: 13px;
+    }
+    table,
+    pre {
+        page-break-inside: avoid;
+    }
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+.md-fences {
+	background-color: #f8f8f8;
+}
+#write pre.md-meta-block {
+	padding: 1rem;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border: 0;
+    border-radius: 3px;
+    color: #777777;
+    margin-top: 0 !important;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
+}
+
+.md-mathjax-midline {
+    background: #fafafa;
+}
+
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
+}
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+.md-image>.md-meta {
+    /*border: 1px solid #ddd;*/
+    border-radius: 3px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: inherit;
+}
+
+.md-tag {
+    color: #a7a7a7;
+    opacity: 1;
+}
+
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
+}
+
+.sidebar-tabs {
+    border-bottom: none;
+}
+
+#typora-quick-open {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#typora-quick-open-item {
+    background-color: #FAFAFA;
+    border-color: #FEFEFE #e5e5e5 #e5e5e5 #eee;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/** focus mode */
+.on-focus-mode blockquote {
+    border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header, .context-menu, .megamenu-content, footer{
+    font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+.html-for-mac .context-menu {
+    --item-hover-bg-color: #E6F0FE;
+}
+
+#md-notification .btn {
+    border: 0;
+}
+
+.dropdown-menu .divider {
+    border-color: #e5e5e5;
+}
+
+ .typora-export li, .typora-export p, .typora-export,  .footnote-line {white-space: normal;} 
+</style>
+</head>
+<body class='typora-export' >
+<div  id='write'  class = 'is-mac'><h1><a name="day01-%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E5%9F%BA%E7%A1%80" class="md-header-anchor"></a><span>Day01-数据采集基础</span></h1><div class='md-toc' mdtype='toc'><p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n2310"><a class="md-toc-inner" href="#day01-%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E5%9F%BA%E7%A1%80">Day01-数据采集基础</a></span><span class="md-toc-item md-toc-h2" data-ref="n2312"><a class="md-toc-inner" href="#%E7%88%AC%E8%99%AB">爬虫</a></span><span class="md-toc-item md-toc-h3" data-ref="n2313"><a class="md-toc-inner" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%88%AC%E8%99%AB">什么是爬虫</a></span><span class="md-toc-item md-toc-h3" data-ref="n2321"><a class="md-toc-inner" href="#%E7%94%A8%E4%BB%80%E4%B9%88%E7%88%AC%E8%99%AB">用什么爬虫</a></span><span class="md-toc-item md-toc-h3" data-ref="n2331"><a class="md-toc-inner" href="#%E7%88%AC%E8%99%AB%E5%88%86%E7%B1%BB">爬虫分类</a></span><span class="md-toc-item md-toc-h4" data-ref="n2333"><a class="md-toc-inner" href="#%E9%80%9A%E7%94%A8%E7%88%AC%E8%99%AB">通用爬虫</a></span><span class="md-toc-item md-toc-h4" data-ref="n2372"><a class="md-toc-inner" href="#%E8%81%9A%E7%84%A6%E7%88%AC%E8%99%AB">聚焦爬虫</a></span><span class="md-toc-item md-toc-h2" data-ref="n2412"><a class="md-toc-inner" href="#http%E5%8D%8F%E8%AE%AE">HTTP协议</a></span><span class="md-toc-item md-toc-h3" data-ref="n2414"><a class="md-toc-inner" href="#http%E7%AE%80%E4%BB%8B">HTTP简介</a></span><span class="md-toc-item md-toc-h3" data-ref="n2449"><a class="md-toc-inner" href="#url%E7%9A%84%E6%9E%84%E6%88%90">URL的构成 </a></span><span class="md-toc-item md-toc-h3" data-ref="n2472"><a class="md-toc-inner" href="#http%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B">HTTP交互过程</a></span><span class="md-toc-item md-toc-h3" data-ref="n2520"><a class="md-toc-inner" href="#%E6%8A%A5%E6%96%87">报文</a></span><span class="md-toc-item md-toc-h3" data-ref="n2529"><a class="md-toc-inner" href="#get-%E5%92%8C-post">GET 和 POST</a></span><span class="md-toc-item md-toc-h3" data-ref="n2561"><a class="md-toc-inner" href="#header">Header</a></span><span class="md-toc-item md-toc-h3" data-ref="n2570"><a class="md-toc-inner" href="#http-%E7%8A%B6%E6%80%81%E7%A0%81">HTTP 状态码</a></span><span class="md-toc-item md-toc-h3" data-ref="n2595"><a class="md-toc-inner" href="#cookie-%E5%92%8C-session">Cookie 和 Session</a></span><span class="md-toc-item md-toc-h3" data-ref="n2627"><a class="md-toc-inner" href="#https">HTTPS</a></span></p></div><h2><a name="%E7%88%AC%E8%99%AB" class="md-header-anchor"></a><span>爬虫</span></h2><h3><a name="%E4%BB%80%E4%B9%88%E6%98%AF%E7%88%AC%E8%99%AB" class="md-header-anchor"></a><span>什么是爬虫</span></h3><ul><li><p><span>生活角度：</span></p><p><span>爬虫，蜘蛛（spider），网</span></p></li><li><p><span>互联网</span></p><p><span>网：互联网，上面的节点就是很多的url（统一资源定位符）</span></p></li><li><p><span>互联网爬虫：</span></p><p><span>就是写一个程序，就是根据url用来爬取网页，然后将网页中的你所需要的数据提取出来都有哪些语言可以实现爬虫</span></p></li></ul><h3><a name="%E7%94%A8%E4%BB%80%E4%B9%88%E7%88%AC%E8%99%AB" class="md-header-anchor"></a><span>用什么爬虫</span></h3><ul><li><p><span>php</span></p><p><span>号称是世界最优美的语言，但是他不是很擅长这个，对多进程多线程支持的不好</span></p></li><li><p><span>java</span></p><p><span>做起来也非常的不错，是python爬虫最主要的对手，代码太臃肿，代码量很大，重构成本非常的大，而我们爬虫需要根据需求经常修改，所以它不好</span></p></li><li><p><span>c、c++</span></p><p><span>学习成本比较高，性能和效率非常高，没这么做的，仅仅是一个能力的体现</span></p></li><li><p><span>python</span></p><p><span>好，语法优美、代码简单，学习成本低，支持的模块多，有一个非常强大的爬虫框架，scrapy</span></p></li></ul><h3><a name="%E7%88%AC%E8%99%AB%E5%88%86%E7%B1%BB" class="md-header-anchor"></a><span>爬虫分类</span></h3><h4><a name="%E9%80%9A%E7%94%A8%E7%88%AC%E8%99%AB" class="md-header-anchor"></a><span>通用爬虫</span></h4><p><span>百度、360、谷歌、搜狗、必应等搜索引擎,搜索引擎使用的爬虫就是通用爬虫.</span></p><ul><li><p><span>通用爬虫都干了啥</span></p><ol start='' ><li><span>抓取网页</span><span>		</span></li><li><span>抓取数据</span></li><li><span>数据存储</span></li><li><span>数据处理</span></li><li><span>给你提供了检索服务</span></li></ol></li><li><p><span>抓取流程：</span></p><ol start='' ><li><span>给一些起始的url，放入待爬取url队列</span></li><li><span>从队列中取出url，开始爬取</span></li><li><span>分析内容，获取网页中所有的url，继续执行第二步，直到结束</span></li></ol></li><li><p><span>搜索引擎如何获取一个新的网站的链接</span></p><ol><li><span>主动给搜索引擎提交url</span></li><li><span>在其它网站中设置友情链接</span></li><li><span>百度和DNS服务商进行合作，加速收录新网站</span></li></ol></li><li><p><span>robots协议</span></p><p><a href='http://www.taobao.com/robots.txt'><span>淘宝</span></a></p><p><span>可以限制通用爬虫的抓取，哪些可以抓(Allow)，哪些不能抓(Disallow)</span></p><p><span> 仅仅是一个君子协议，一般情况只有大型搜索引擎遵从这个协议。</span></p></li><li><p><span>网站排名（SEO）</span></p><ol start='' ><li><span>根据pagerank值排名，根据流量、点击率等等进行综合的计算进行排名，值越高，排名越靠前</span></li><li><span>百度竞价排名，谁给的钱多，谁在最前。</span></li></ol></li><li><p><span>缺点：</span></p><ol start='' ><li><span>抓取的很多数据都是无用的。</span></li><li><span>不能根据用户的需求来抓取对应的数据</span></li></ol></li></ul><h4><a name="%E8%81%9A%E7%84%A6%E7%88%AC%E8%99%AB" class="md-header-anchor"></a><span>聚焦爬虫</span></h4><p><span>根据自己的需求，去写一个网络爬虫程序，抓取对应的数据即可</span></p><ul><li><span>爬虫如何抓取网页数据</span></li></ul><p><span>网页都有特点：</span></p><ol><li><span>网页都有自己的唯一的统一资源定位符（url）</span></li><li><span>网页都是有html组成的</span></li><li><span>传输协议使用的都是http、https协议</span></li></ol><p><span>爬虫设计的思路是：</span></p><ol><li><span>给我一个url</span></li><li><span>模拟浏览器通过http协议访问url，获取到这个url的html代码</span></li><li><span>解析字符串（根据一定规则提取你所需要的数据）</span></li></ol><p><span>开发环境：</span>
+<span>	</span><span>python3</span></p><p><span>整体内容：</span></p><ol><li><p><span>python语法、HTTP交互原理</span></p></li><li><p><span>如何抓取页面，使用到python库</span>
+<code>urllib</code><span> 、 </span><code>requests</code></p></li><li><p><span>解析内容</span>
+<code>re(正则表达式)</code><span>、</span><code>xpath</code><span>、</span><code>bs4</code><span>、</span><code>jsonpath</code></p></li><li><p><span>采集动态html</span>
+<code>selenium</code><span>+</span><code>chromium</code><span>/</span><code>phantomjs</code></p></li><li><p><span>框架</span>
+<code>scrapy</code><span>高性能异步网络框架</span></p></li><li><p><span>分布式框架</span></p><p><code>scrapy-redis</code><span> ，在scrapy的基础上增了一套组件，结合redis进行队列、存储等功能</span></p></li><li><p><span>爬虫-反爬虫-反反爬虫之间的博弈过程</span></p><p><span>其实爬虫的难点，不是复杂的界面，不是数据的提取，而是和对面相互博弈的过程</span>
+<span> 反爬虫的一般手段：</span></p><ul><li><span>用户身份识别</span></li><li><span>IP访问频次限制</span></li><li><span>验证码</span></li><li><span>动态数据加载</span></li><li><span>数据加密</span></li></ul><p><span>最终肯定能获取数据，公司值不值得，因为只要浏览器能够正常访问，那么数据就能拿到</span></p></li></ol><p>&nbsp;</p><p>&nbsp;</p><hr /><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><h2><a name="http%E5%8D%8F%E8%AE%AE" class="md-header-anchor"></a><span>HTTP协议</span></h2><p><strong><em><span>HyperText Transfer Protocol（超文本传输协议）</span></em></strong><span> </span></p><h3><a name="http%E7%AE%80%E4%BB%8B" class="md-header-anchor"></a><span>HTTP简介</span></h3><ol start='' ><li><p><span>发展版本</span><span>	</span></p><figure><table><thead><tr><th><span>版本</span></th><th><span>内容        </span></th><th><span>内容</span></th><th><span>发展状况                         </span></th></tr></thead><tbody><tr><td><span>HTTP/0.9</span></td><td><span>1991年</span></td><td><span>不涉及数据包传输，规定客户端和服务器之间通信格式，只能GET请求</span></td><td><span>没有作为正式的标准</span></td></tr><tr><td><span>HTTP/1.0</span></td><td><span>1996年</span></td><td><span>传输内容格式不限制，增加PUT、PATCH、HEAD、 OPTIONS、DELETE命令</span></td><td><span>正式作为标准</span></td></tr><tr><td><span>HTTP/1.1</span></td><td><span>1997年</span></td><td><span>持久连接(长连接)、节约带宽、HOST域、管道机制、分块传输编码</span></td><td><span>2015年前使用最广泛</span></td></tr><tr><td><span>HTTP/2</span></td><td><span>2015年</span></td><td><span>多路复用、服务器推送、头信息压缩、二进制协议等</span></td><td><span>逐渐覆盖市场</span></td></tr></tbody></table></figure></li><li><p><span>构建在 TCP 应用层之上的协议</span></p></li><li><p><span>应用领域</span></p><p><span>几乎涵盖所有日常的互联网场景</span></p></li></ol><h3><a name="url%E7%9A%84%E6%9E%84%E6%88%90" class="md-header-anchor"></a><span>URL的构成 </span></h3><p><strong><em><span>Uniform Resource Locator(统一资源定位符)</span></em></strong></p><p><span> </span><strong><code>http://www.example.com:80/foo/bar/readme?x=0y=abc#part1</code></strong></p><figure><table><thead><tr><th><code>http://</code></th><th><code>www.example.com</code></th><th><code>:80</code></th><th><code>/foo/bar/readme</code></th><th><code>?x=0&amp;y=abc</code></th><th><code>#part1</code></th></tr></thead><tbody><tr><td><span>协议</span></td><td><span>域名/主机名</span></td><td><span>端口</span></td><td><span>路由</span></td><td><span>参数</span></td><td><span>锚点</span></td></tr><tr><td><span>Scheme</span></td><td><span>Host[name]</span></td><td><span>Port</span></td><td><span>Path</span></td><td><span>Query</span></td><td><span>Fagement</span></td></tr></tbody></table></figure><h3><a name="http%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B" class="md-header-anchor"></a><span>HTTP交互过程</span></h3><div class="md-diagram-panel"><svg id="mermaidChart12" width="1099" xmlns="http://www.w3.org/2000/svg" height="652.03125" viewBox="-108 -8 1099 652.03125" style="height: 692.03125px;"><style></style><style>#mermaidChart12 {
+    color: rgb(51, 51, 51);
+    font: normal normal normal normal 12.600000381469727px/20px "Lucida Console", Consolas, Courier, monospace;
+  }</style><g></g><g><line id="actor23" x1="75" y1="5" x2="75" y2="643.03125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><line id="actor24" x1="275" y1="5" x2="275" y2="643.03125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="200" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">DNS Server</tspan></text></g><g><line id="actor25" x1="475" y1="5" x2="475" y2="643.03125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="400" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="475" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="475" dy="0">Server</tspan></text></g><g><line id="actor26" x1="675" y1="5" x2="675" y2="643.03125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="600" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="675" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="675" dy="0">WSGI</tspan></text></g><g><line id="actor27" x1="875" y1="5" x2="875" y2="643.03125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="800" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="875" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="875" dy="0">WebAPP</tspan></text></g><defs><marker id="arrowhead" refX="5" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" stroke-width="1px" d="M 9,2 V 6 L16,4 Z" style="stroke-dasharray: 0px, 0px;"></path><path fill="none" stroke="#000000" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7" style="stroke-dasharray: 0px, 0px;"></path></marker></defs><g><text x="175" y="93" class="messageText" style="text-anchor: middle;">URL(www.example.com)</text><line x1="75" y1="100" x2="275" y2="100" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="175" y="128" class="messageText" style="text-anchor: middle;">Host(192.168.0.1)</text><line x1="275" y1="135" x2="75" y2="135" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="275" y="163" class="messageText" style="text-anchor: middle;">建立TCP连接</text><line x1="75" y1="170" x2="475" y2="170" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="-100" y="178" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="-104" y="202" fill="black" class="noteText"><tspan x="-84" fill="black">生成Request报文</tspan></text></g><g><text x="275" y="242.015625" class="messageText" style="text-anchor: middle;">Request 报文</text><line x1="75" y1="249.015625" x2="475" y2="249.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="575" y="277.015625" class="messageText" style="text-anchor: middle;">解析报文</text><line x1="475" y1="284.015625" x2="675" y2="284.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="775" y="312.015625" class="messageText" style="text-anchor: middle;">Request 对象</text><line x1="675" y1="319.015625" x2="875" y2="319.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="875" y="368.015625" class="messageText" style="text-anchor: middle;">处理请求返回响应</text><path d="M 875,375.015625 C 935,365.015625 935,405.015625 875,395.015625" class="messageLine0" stroke-width="2" stroke="black" style="fill: none;"></path></g><g><line x1="767" y1="327.015625" x2="983" y2="327.015625" class="loopLine"></line><line x1="983" y1="327.015625" x2="983" y2="413.015625" class="loopLine"></line><line x1="767" y1="413.015625" x2="983" y2="413.015625" class="loopLine"></line><line x1="767" y1="327.015625" x2="767" y2="413.015625" class="loopLine"></line><polygon points="767,327.015625 817,327.015625 817,340.015625 808.6,347.015625 767,347.015625" class="labelBox"></polygon><text x="774.5" y="342.015625" fill="black" class="labelText"><tspan x="774.5" fill="black">loop</tspan></text><text x="875" y="339.015625" fill="black" class="loopText" style="text-anchor: middle;"><tspan x="875" fill="black">[ 处理Request ]</tspan></text></g><g><text x="675" y="441.015625" class="messageText" style="text-anchor: middle;">Response</text><line x1="875" y1="448.015625" x2="475" y2="448.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="275" y="476.015625" class="messageText" style="text-anchor: middle;">响应报文</text><line x1="475" y1="483.015625" x2="75" y2="483.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><text x="275" y="511.015625" class="messageText" style="text-anchor: middle;">关闭连接</text><line x1="75" y1="518.015625" x2="475" y2="518.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="-100" y="526.015625" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="-104" y="550.015625" fill="black" class="noteText"><tspan x="-84" fill="black">生渲染并展示页面</tspan></text></g><g><rect x="0" y="578.03125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="610.53125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><rect x="200" y="578.03125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="610.53125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">DNS Server</tspan></text></g><g><rect x="400" y="578.03125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="475" y="610.53125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="475" dy="0">Server</tspan></text></g><g><rect x="600" y="578.03125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="675" y="610.53125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="675" dy="0">WSGI</tspan></text></g><g><rect x="800" y="578.03125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="875" y="610.53125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="875" dy="0">WebAPP</tspan></text></g></svg></div><p>&nbsp;</p><p><span>过程描述：</span></p><ol start='' ><li><p><span>DNS解析</span></p></li><li><p><span>建立TCP（三次握手）</span></p><div class="md-diagram-panel"><svg id="mermaidChart13" width="566" xmlns="http://www.w3.org/2000/svg" height="532.15625" viewBox="-108 -8 566 532.15625" style="height: 572.15625px;"><style></style><style>#mermaidChart13 {
+    color: rgb(51, 51, 51);
+    font: normal normal normal normal 12.600000381469727px/20px "Lucida Console", Consolas, Courier, monospace;
+  }</style><g></g><g><line id="actor28" x1="75" y1="5" x2="75" y2="523.15625" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><line id="actor29" x1="275" y1="5" x2="275" y2="523.15625" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="200" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">Server</tspan></text></g><defs><marker id="arrowhead" refX="5" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" stroke-width="1px" d="M 9,2 V 6 L16,4 Z" style="stroke-dasharray: 0px, 0px;"></path><path fill="none" stroke="#000000" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7" style="stroke-dasharray: 0px, 0px;"></path></marker></defs><g><rect x="-100" y="73" fill="#EDF2AE" stroke="#666" width="150" height="52.03125" rx="0" ry="0" class="note"></rect><text x="-104" y="97" fill="black" class="noteText"><tspan x="-84" fill="black">Client发送SYN报文</tspan></text><text x="-104" y="113.015625" fill="black" class="noteText"><tspan x="-84" fill="black">并设置发送序列号为X</tspan></text></g><g><text x="175" y="153.03125" class="messageText" style="text-anchor: middle;">SYN=1,Seq=X</text><line x1="75" y1="160.03125" x2="275" y2="160.03125" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="300" y="168.03125" fill="#EDF2AE" stroke="#666" width="150" height="84.0625" rx="0" ry="0" class="note"></rect><text x="296" y="192.03125" fill="black" class="noteText"><tspan x="316" fill="black">Server发送SYN+</tspan></text><text x="296" y="208.046875" fill="black" class="noteText"><tspan x="316" fill="black">ACK报文并设置</tspan></text><text x="296" y="224.0625" fill="black" class="noteText"><tspan x="316" fill="black">发送序列号为Y</tspan></text><text x="296" y="240.078125" fill="black" class="noteText"><tspan x="316" fill="black">确认序列号为X+1</tspan></text></g><g><text x="175" y="280.09375" class="messageText" style="text-anchor: middle;">SYN=1,ACK=X+1,Seq=Y</text><line x1="275" y1="287.09375" x2="75" y2="287.09375" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="-100" y="295.09375" fill="#EDF2AE" stroke="#666" width="150" height="68.046875" rx="0" ry="0" class="note"></rect><text x="-104" y="319.09375" fill="black" class="noteText"><tspan x="-84" fill="black">Client发送ACK报文</tspan></text><text x="-104" y="335.109375" fill="black" class="noteText"><tspan x="-84" fill="black">并设置发送序列号为Z</tspan></text><text x="-104" y="351.125" fill="black" class="noteText"><tspan x="-84" fill="black">确认序列号为Y+1</tspan></text></g><g><text x="175" y="391.140625" class="messageText" style="text-anchor: middle;">ACK=Y+1,Seq=Z</text><line x1="75" y1="398.140625" x2="275" y2="398.140625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="300" y="406.140625" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="296" y="430.140625" fill="black" class="noteText"><tspan x="316" fill="black">完成连接</tspan></text></g><g><rect x="0" y="458.15625" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="490.65625" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><rect x="200" y="458.15625" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="490.65625" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">Server</tspan></text></g></svg></div><p>&nbsp;</p></li><li><p><span>生成 Request 报文</span></p></li><li><p><span>Client 发送 Request 报文</span></p></li><li><p><span>Server 接收报文</span></p></li><li><p><span>通过 WSGI 解析报文, 获得 Request 对象</span></p></li><li><p><span>Django、Flask 等应用程序进行逻辑处理</span></p><ol start='' ><li><span>process_request (Middleware)</span></li><li><span>URL match</span></li><li><span>process_views (Middleware)</span></li><li><span>Views --&gt; process_exception</span></li><li><span>Redner Template</span></li><li><span>Response</span></li><li><span>process_response (Middleware)</span></li></ol></li><li><p><span>从 Response 对象生成报文</span></p></li><li><p><span>Server 返回报文给 Client</span></p></li><li><p><span>关闭连接（4次挥手）</span></p><div class="md-diagram-panel"><svg id="mermaidChart14" width="566" xmlns="http://www.w3.org/2000/svg" height="615.203125" viewBox="-108 -8 566 615.203125" style="height: 655.203125px;"><style></style><style>#mermaidChart14 {
+    color: rgb(51, 51, 51);
+    font: normal normal normal normal 12.600000381469727px/20px "Lucida Console", Consolas, Courier, monospace;
+  }</style><g></g><g><line id="actor30" x1="75" y1="5" x2="75" y2="606.203125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><line id="actor31" x1="275" y1="5" x2="275" y2="606.203125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="200" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">Server</tspan></text></g><defs><marker id="arrowhead" refX="5" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" stroke-width="1px" d="M 9,2 V 6 L16,4 Z" style="stroke-dasharray: 0px, 0px;"></path><path fill="none" stroke="#000000" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7" style="stroke-dasharray: 0px, 0px;"></path></marker></defs><g><rect x="-100" y="73" fill="#EDF2AE" stroke="#666" width="150" height="68.046875" rx="0" ry="0" class="note"></rect><text x="-104" y="97" fill="black" class="noteText"><tspan x="-84" fill="black">Client发送FIN+Ack</tspan></text><text x="-104" y="113.015625" fill="black" class="noteText"><tspan x="-84" fill="black">报文并设置发送序列号</tspan></text><text x="-104" y="129.03125" fill="black" class="noteText"><tspan x="-84" fill="black">为X</tspan></text></g><g><text x="175" y="169.046875" class="messageText" style="text-anchor: middle;">FIN=1,Ack=1,Seq=X</text><line x1="75" y1="176.046875" x2="275" y2="176.046875" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="300" y="184.046875" fill="#EDF2AE" stroke="#666" width="150" height="68.046875" rx="0" ry="0" class="note"></rect><text x="296" y="208.046875" fill="black" class="noteText"><tspan x="316" fill="black">Server发送ACK报文并设置</tspan></text><text x="296" y="224.0625" fill="black" class="noteText"><tspan x="316" fill="black">发送序列号为Z</tspan></text><text x="296" y="240.078125" fill="black" class="noteText"><tspan x="316" fill="black">确认序列号为X+1</tspan></text></g><g><text x="175" y="280.09375" class="messageText" style="text-anchor: middle;">ACK=X+1,Seq=Z</text><line x1="275" y1="287.09375" x2="75" y2="287.09375" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="300" y="295.09375" fill="#EDF2AE" stroke="#666" width="150" height="84.0625" rx="0" ry="0" class="note"></rect><text x="296" y="319.09375" fill="black" class="noteText"><tspan x="316" fill="black">Server发送FIN+</tspan></text><text x="296" y="335.109375" fill="black" class="noteText"><tspan x="316" fill="black">ACK报文并设置</tspan></text><text x="296" y="351.125" fill="black" class="noteText"><tspan x="316" fill="black">发送序列号为Y</tspan></text><text x="296" y="367.140625" fill="black" class="noteText"><tspan x="316" fill="black">确认序列号为X</tspan></text></g><g><text x="175" y="407.15625" class="messageText" style="text-anchor: middle;">FIN=1,Ack=X,Seq=Y</text><line x1="275" y1="414.15625" x2="75" y2="414.15625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="-100" y="422.15625" fill="#EDF2AE" stroke="#666" width="150" height="68.046875" rx="0" ry="0" class="note"></rect><text x="-104" y="446.15625" fill="black" class="noteText"><tspan x="-84" fill="black">Client发送ACK报文</tspan></text><text x="-104" y="462.171875" fill="black" class="noteText"><tspan x="-84" fill="black">并设置发送序列号为X</tspan></text><text x="-104" y="478.1875" fill="black" class="noteText"><tspan x="-84" fill="black">确认序列号为Y</tspan></text></g><g><text x="175" y="518.203125" class="messageText" style="text-anchor: middle;">ACK=Y,Seq=X</text><line x1="75" y1="525.203125" x2="275" y2="525.203125" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="0" y="541.203125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="573.703125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><rect x="200" y="541.203125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="573.703125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">Server</tspan></text></g></svg></div><p>&nbsp;</p></li><li><p><span>解析、渲染 HTML 页面</span></p></li></ol><p>&nbsp;</p><p>&nbsp;</p><h3><a name="%E6%8A%A5%E6%96%87" class="md-header-anchor"></a><span>报文</span></h3><ul><li><p><span>请求报文</span></p><table>
+<tbody><tr>
+  <td>请求方法</td> 
+  <td>空格</td>
+  <td>URL</td>
+  <td>空格</td>
+  <td>协议版本</td>
+  <td>回车符</td>
+  <td>换行符</td>
+</tr>
+<tr>
+  <td>请求头部字段名</td>
+  <td>冒号</td>
+  <td colspan="3">值</td>
+  <td>回车符</td>
+  <td>换行符</td>
+</tr>
+<tr>
+  <td>请求头部字段名</td>
+  <td>冒号</td>
+  <td colspan="3">值</td>
+  <td>回车符</td>
+  <td>换行符</td>
+</tr>
+<tr>
+   <td colspan="7">空行</td> 
+</tr>
+ <tr>
+   <td colspan="7">请求包体</td>    
+ </tr></tbody></table><p>&nbsp;</p></li><li><p><span>响应报文</span></p><table>
+<tbody><tr>
+  <td>协议版本</td> 
+  <td>空格</td>
+  <td>状态码</td>
+  <td>空格</td>
+  <td>状态码描述</td>
+  <td>回车符</td>
+  <td>换行符</td>
+</tr>
+<tr>
+  <td>响应头部字段名</td>
+  <td>冒号</td>
+  <td colspan="3">值</td>
+  <td>回车符</td>
+  <td>换行符</td>
+</tr>
+<tr>
+  <td>响应头部字段名</td>
+  <td>冒号</td>
+  <td colspan="3">值</td>
+  <td>回车符</td>
+  <td>换行符</td>
+</tr>
+<tr>
+   <td colspan="7">空行</td> 
+</tr>
+ <tr>
+   <td colspan="7">响应包体</td>    
+ </tr></tbody></table></li></ul><h3><a name="get-%E5%92%8C-post" class="md-header-anchor"></a><span>GET 和 POST</span></h3><ul><li><p><span>表象</span></p><ul><li><span>GET 在浏览器可以回退, 而 POST 则会再次提交请求</span></li><li><span>GET 的 URL 可以被 Bookmark, 而 POST 不可以.</span></li><li><span>GET 请求会被浏览器主动缓存, 而 POST 不会, 除非手动设置.</span></li><li><span>GET 请求参数会被完整保留在浏览器历史记录里, 而 POST 中的参数不会被保留.</span></li><li><span>GET 请求的数据只能进行 URL 编码, 而 POST 支持多种编码方式.</span></li><li><span>GET 请求在 URL 中传送的参数是有长度限制的 (URL 的最大长度是 2048 个字符), 而 POST 没有.</span></li><li><span>对参数的数据类型, GET 只接受 ASCII 字符, 而 POST 没有限制.</span></li><li><span>GET 比 POST 更不安全, 因为参数直接暴露在URL上, 所以不能用来传递敏感信息.</span></li><li><span>GET 参数通过 URL 传递, POST 放在 Request body 中.</span></li></ul></li><li><p><span>深层</span></p><ul><li><span>GET 产生一个TCP数据包；POST产生两个TCP数据包.</span></li><li><span>GET: 浏览器会把 http 的 header和data一并发送出去, 服务器响应200（返回数据）；</span></li><li><span>POST: 浏览器先发送 header, 服务器响应 100 continue, 浏览器再发送data, 服务器响应200 ok（返回数据）.</span></li></ul></li></ul><h3><a name="header" class="md-header-anchor"></a><span>Header</span></h3><ul><li><p><span>请求头</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" style="page-break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#发送请求的时候，告诉服务器可以接受那些内容，MIME<span class="cm-tab" role="presentation" cm-text="	"> </span>Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#客户端可以接受的编码类型</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Accept-Encoding:gzip, deflate, br</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#接受的语言类型</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Accept-Language:zh-CN,zh;q=0.9</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#和缓存相关</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Cache-Control:max-age=0</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#连接方式，保持长连接</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Connection:keep-alive</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#会话相关</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Cookie:BIDUPSID=9F5816DD3088F4291EA4C12FFC2ABCDE; BAIDUID=78AF1CE91C8F84BD601F6E2778C618DA:FG=1; PSTM=1513827071; BD_UPN=12314353; H_PS_PSSID=1454_21125_18559_25177; BD_CK_SAM=1; PSINO=2; BDORZ=B490B5EBF6F3CD402E515D22BCDA1598; pgv_pvi=769396736; pgv_si=s5038345216; BD_HOME=0; H_PS_645EC=3ff96rRFDTjHDZ%2BqFcj5%2FYOP6KISjZyhvnS1a%2B1q4A19NgE%2FSjllKIn8ejA</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#主机</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Host:www.baidu.com</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#是否升级为https请求</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Upgrade-Insecure-Requests:1</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#客户端浏览器类型</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">User-Agent:Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#如果是ajax请求，一般都带这个</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">X-Requested-With: XMLHttpRequest</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#上一个页面，你从哪个页面过来的</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Referer: https://www.baidu.com/?tn=57095150_6_oem_dg</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: transparent; top: 540px;"></div><div class="CodeMirror-gutters" style="display: none; height: 540px;"></div></div></div></pre></li><li><p><span>响应头</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" style="page-break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"># 连接方式</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Connection:Keep-Alive</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#内容编码格式</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Content-Encoding:gzip</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#内容类型</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Content-Type:text/html; charset=utf-8</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#请求体/响应体的长度</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Content-Length:3214 </span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#时间</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Date:Sun, 24 Dec 2017 04:21:28 GMT</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#过期时间</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Expires:Sun, 24 Dec 2017 04:20:29 GMT</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#服务器版本</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Server:BWS/1.1</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#给客户端保存的cookie值</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Set-Cookie:BDSVRTM=0; path=/</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Set-Cookie:BD_HOME=0; path=/</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Set-Cookie:H_PS_PSSID=1454_21125_18559_25177; path=/; domain=.baidu.com</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">#内容是否分块传输</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">Transfer-Encoding:chunked</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: transparent; top: 400px;"></div><div class="CodeMirror-gutters" style="display: none; height: 400px;"></div></div></div></pre><p>&nbsp;</p></li></ul><h3><a name="http-%E7%8A%B6%E6%80%81%E7%A0%81" class="md-header-anchor"></a><span>HTTP 状态码</span></h3><p><span>常见HTTP状态码</span></p><ul><li><span>200 </span><strong><span>OK</span></strong><span> 成功</span></li><li><span>301 </span><strong><span>Moved Permanently</span></strong><span> 重定向 (永久迁移)</span></li><li><span>302 </span><strong><span>Moved Temporarily</span></strong><span> 重定向 (临时迁移)</span></li><li><span>303 </span><strong><span>See Other</span></strong><span> 重定向 (非 GET 请求的重定向)</span></li><li><span>400 </span><strong><span>Bad Request</span></strong><span> 客户端请求错误</span></li><li><span>403 </span><strong><span>Forbidden</span></strong><span> 拒绝访问</span></li><li><span>404 </span><strong><span>Not Found</span></strong><span> 找不到页面</span></li><li><span>500 </span><strong><span>Internal Server Error</span></strong><span> 服务器内部错误</span></li><li><span>502 </span><strong><span>Bad Gateway</span></strong><span> 网关错误</span></li><li><span>503 </span><strong><span>Service Unavailable</span></strong><span> 服务器维护或者过载</span></li><li><span>504 </span><strong><span>Gateway Timeout</span></strong><span> 请求超时</span></li></ul><p>&nbsp;</p><h3><a name="cookie-%E5%92%8C-session" class="md-header-anchor"></a><span>Cookie 和 Session</span></h3><ul><li><p><span>无状态协议的无奈之举</span></p><ul><li><span>通信如同一次无法看到脸的握手, 如何识别用户</span></li></ul></li><li><p><span>异同</span></p><ol start='' ><li><span>session 在服务器端, cookie 在客户端（浏览器）</span></li><li><span>session 默认被存在在服务器的一个文件里（不是内存）</span></li><li><span>session 的运行依赖 session id, 而 session id 是存在 cookie 中的, 也就是说, 如果浏览器禁用了 cookie , 同时 session 也会失效（但是可以通过其它方式实现, 比如在 url 中传递 session_id）</span></li><li><span>session 可以放在 文件、数据库、或内存中都可以.</span></li><li><span>用户验证这种场合一般会用 session</span></li></ol></li><li><p><span>产生1过程</span></p><ol start='' ><li><span>客户端请求</span></li><li><span>服务器产生 session_id, 并传回浏览器</span></li><li><span>浏览器将 session_id 写入 cookie</span></li><li><span>后续请求会写入 Header</span></li></ol></li></ul><p>&nbsp;</p><h3><a name="https" class="md-header-anchor"></a><span>HTTPS</span></h3><p><span>	</span><span> </span><strong><em><span>Hypertext Transfer Protocol Secure(超文本传输安全协议)</span></em></strong></p><ol start='' ><li><p><span>起源</span></p><p><strong><span>网景</span></strong><span>在1994年创建了HTTPS，并应用在网景导航者浏览器中。 最初，HTTPS是与SSL一起使用的；在</span><code>SSL</code><span>逐渐演变到</span><code>TLS</code><span>时，最新的HTTPS也由在2000年五月公布的RFC 2818正式确定下来。</span></p></li><li><p><span>优点</span></p><ul><li><span>防窃听: 建立一个信息安全通道，来保证数据传输的安全</span></li><li><span>防篡改: 防止内容被第三方修改</span></li><li><span>放冒充: 确认网站的真实性</span></li></ul></li><li><p><span>缺点</span></p><ul><li><span>加密、解密消耗 CPU</span></li><li><span>握手过程繁琐</span></li></ul></li><li><p><span>加密算法</span></p><ul><li><p><span>对称加密（加密和解密用同样的Key）</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang=""><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">text: abcdefg</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;  |  ^</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;  v  |</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  key: &nbsp;  1234</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;  |  ^</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;  v  |</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">new:  hasjdkfhasdf</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: transparent; top: 140px;"></div><div class="CodeMirror-gutters" style="display: none; height: 140px;"></div></div></div></pre></li><li><p><span>常见对称加密方式</span></p><ul><li><p><span>TEA</span></p><p><span>加密强度比较低，但是速度快！代表QQ消息的加密(16轮加密)</span></p></li><li><p><span>AES</span></p><p><span>强度速度兼具，没有TEA快但是强度远大于TEA</span></p></li><li><p><span>3DES</span></p><p><span>3DES是DES加密算法的一种模式，它使用3条64位的密钥对数据进行三次加密。数据加密标准（DES）是美国的一种由来已久的加密标准。3DES是DES向AES过渡的加密算法。</span></p></li></ul></li></ul><p>&nbsp;</p><p>&nbsp;</p><ul><li><p><span>非对称加密（加密和解密用不同的Key）</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang=""><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  text: &nbsp; abcdefghijklmn</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  | &nbsp; &nbsp; &nbsp; ^</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  v &nbsp; &nbsp; &nbsp; |</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  pub_key: 123 &nbsp; &nbsp;  |</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  pri_key:  | &nbsp; 1234567890123456789546789</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  | &nbsp; &nbsp; &nbsp; ^</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  v &nbsp; &nbsp; &nbsp; |</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  new: ajsgdpfqibwfmbsdlkfjbq;ejkwbf;qkbfd</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: transparent; top: 160px;"></div><div class="CodeMirror-gutters" style="display: none; height: 160px;"></div></div></div></pre></li><li><p><span>常见非对称加密</span></p><ul><li><p><span>RSA</span></p><p><span>最早的、应用较广的非对称加密</span></p></li><li><p><span>ED25519</span></p><p><span>秘钥最短，强度最强</span></p></li></ul></li></ul><div class="md-diagram-panel"><svg id="mermaidChart15" width="566" xmlns="http://www.w3.org/2000/svg" height="550.078125" viewBox="-108 -8 566 550.078125" style="height: 590.078125px;"><style></style><style>#mermaidChart15 {
+    color: rgb(51, 51, 51);
+    font: normal normal normal normal 12.600000381469727px/20px "Lucida Console", Consolas, Courier, monospace;
+  }</style><g></g><g><line id="actor32" x1="75" y1="5" x2="75" y2="541.078125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="0" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><line id="actor33" x1="275" y1="5" x2="275" y2="541.078125" class="actor-line" stroke-width="0.5px" stroke="#999"></line><rect x="200" y="0" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="32.5" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">Server</tspan></text></g><defs><marker id="arrowhead" refX="5" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><defs><marker id="crosshead" markerWidth="15" markerHeight="8" orient="auto" refX="16" refY="4"><path fill="black" stroke="#000000" stroke-width="1px" d="M 9,2 V 6 L16,4 Z" style="stroke-dasharray: 0px, 0px;"></path><path fill="none" stroke="#000000" stroke-width="1px" d="M 0,1 L 6,7 M 6,1 L 0,7" style="stroke-dasharray: 0px, 0px;"></path></marker></defs><g><rect x="-100" y="73" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="-104" y="97" fill="black" class="noteText"><tspan x="-84" fill="black">Client发起请求</tspan></text></g><g><text x="175" y="137.015625" class="messageText" style="text-anchor: middle;">支持的协议版本、加密算法，随机数</text><line x1="75" y1="144.015625" x2="275" y2="144.015625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="300" y="152.015625" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="296" y="176.015625" fill="black" class="noteText"><tspan x="316" fill="black">Server发送证书</tspan></text></g><g><text x="175" y="216.03125" class="messageText" style="text-anchor: middle;">确定的加密协议版本及加密算法，服务器的证书，服务器的随机数</text><line x1="275" y1="223.03125" x2="75" y2="223.03125" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="-100" y="231.03125" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="-104" y="255.03125" fill="black" class="noteText"><tspan x="-84" fill="black">Client验证证书</tspan></text></g><g><text x="175" y="295.046875" class="messageText" style="text-anchor: middle;">随机数(使用证书中公钥加密)，编码改变通知，握手结束通知</text><line x1="75" y1="302.046875" x2="275" y2="302.046875" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="300" y="310.046875" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="296" y="334.046875" fill="black" class="noteText"><tspan x="316" fill="black">生成秘钥</tspan></text></g><g><text x="175" y="374.0625" class="messageText" style="text-anchor: middle;">编码改变通知、握手结束通知</text><line x1="275" y1="381.0625" x2="75" y2="381.0625" class="messageLine0" stroke-width="2" stroke="black" marker-end="url(#arrowhead)" style="fill: none;"></line></g><g><rect x="-100" y="389.0625" fill="#EDF2AE" stroke="#666" width="150" height="36.015625" rx="0" ry="0" class="note"></rect><text x="-104" y="413.0625" fill="black" class="noteText"><tspan x="-84" fill="black">Client发送数据</tspan></text></g><g><text x="175" y="453.078125" class="messageText" style="text-anchor: middle;">对称加密传输</text><line x1="75" y1="460.078125" x2="275" y2="460.078125" class="messageLine0" stroke-width="2" stroke="black" style="fill: none;"></line></g><g><rect x="0" y="476.078125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="75" y="508.578125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="75" dy="0">Client</tspan></text></g><g><rect x="200" y="476.078125" fill="#eaeaea" stroke="#666" width="150" height="65" rx="3" ry="3" class="actor"></rect><text x="275" y="508.578125" dominant-baseline="central" alignment-baseline="central" class="actor" style="text-anchor: middle;"><tspan x="275" dy="0">Server</tspan></text></g></svg></div><p>&nbsp;</p></li></ol><p>&nbsp;</p></div>
+</body>
+</html>
